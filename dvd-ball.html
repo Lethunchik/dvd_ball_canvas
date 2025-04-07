@@ -1,0 +1,90 @@
+<html>
+<body>
+<canvas id="canvas" style="border: 1px solid" width="600" height="300"></canvas>
+
+<script>
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var raf;
+var running = false;
+
+var balls = new Array();
+
+var ball = {
+x: 100,
+y: 100,
+vx: 5,
+vy: 1,
+radius: 15,
+color: 'red',
+
+draw: function() {
+ctx.beginPath();
+ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
+ctx.closePath();
+ctx.fillStyle = this.color;
+ctx.fill();
+}
+};
+
+
+function clear() {
+ctx.fillStyle = 'rgba(255, 255, 255, 0.01)';
+ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+
+function draw() {
+console.log("draw");
+clear();
+for (let b of balls) {
+b.draw();
+b.x += b.vx;
+b.y += b.vy;
+
+if (b.y + b.radius > canvas.height || b.y - b.radius < 0) {
+b.vy = -b.vy;
+}
+if (b.x + b.radius > canvas.width || b.x - b.radius < 0) {
+b.vx = -b.vx;
+}
+}
+
+raf = window.requestAnimationFrame(draw);
+}
+
+canvas.addEventListener('mousemove', function(e) {
+
+if (!running) {
+clear();
+ball.vx = e.clientX - ball.x;
+ball.vy = e.clientY - ball.y;
+ball.x = e.clientX;
+ball.y = e.clientY;
+ball.draw();
+}
+});
+
+function getRandomInt(max) {
+return Math.floor(Math.random() * max);
+}
+
+canvas.addEventListener('click', function(e) {
+if (!running) {
+let b = Object.assign({}, ball);
+b.color = 'rgba(' + getRandomInt(255) + ', ' + getRandomInt(255) + ', ' + getRandomInt(255) + ', 0.1)';
+balls.push(b);
+
+//running = true;
+}
+});
+
+canvas.addEventListener('mouseout', function(e) {
+//window.cancelAnimationFrame(raf);
+running = false;
+});
+
+//ball.draw();
+raf = window.requestAnimationFrame(draw);
+</script>
+</body>
+</html>
